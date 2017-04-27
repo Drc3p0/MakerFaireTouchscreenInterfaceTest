@@ -3,6 +3,7 @@
 #include <SPI.h>
 #include <SD.h>
 #include <SerialFlash.h>
+#include "chords.h"
 #include <stdint.h> //touchscreen
 #include "TouchScreen.h"
 // These are the pins for the touchscreen
@@ -14,8 +15,8 @@
 #define TsPot2 A6 // 
 #define selectionPin A7 // 
 
-int TsPot1Val = 0;
-int TsPot2Val = 0;
+int tsX = 0;
+int tsY = 0;
 int selectionValue = 0;
 TouchScreen ts = TouchScreen(XP, YP, XM, YM, 300);  //use a multimeter to read the resistance between X+ and X- and replace value which is currently 300.
 
@@ -31,73 +32,82 @@ int minorPentatonic[8] = {0, 3, 5, 7, 10, 12, 15, 17}; // minor pentatonic
 int octaves[5] = {0, 12, 24, 36, 48}; // octaves
 float mtof(int note){      // Outputs a float freq based on incoming MIDI note. How to use: mtof(noteValue)  
    return (440.0f * exp2f((float)(note - 69) * 0.0833333f));
+}
 
 // GUItool: begin automatically generated code
-AudioSynthWaveform       waveform4;      //xy=340.0000114440918,1699.9997282028198
-AudioSynthWaveform       waveform6;      //xy=350.0000114440918,1788.5711567742485
-AudioSynthWaveform       waveform5;      //xy=357.1428685869489,1741.4282996313912
+AudioSynthWaveform       waveform4;      //xy=224.44445037841797,1697.7775182724
+AudioSynthWaveform       waveform6;      //xy=234.44445037841797,1786.3489468438286
+AudioSynthWaveform       waveform5;      //xy=241.58730752127508,1739.2060897009712
+AudioSynthWaveform       waveform8;      //xy=320.9523391723633,1967.7777099609375
+AudioSynthWaveform       waveform3;      //xy=323.8094902038574,1930.634804725647
+AudioSynthWaveform       waveform1;      //xy=334.28568267822266,1840.1583137512207
+AudioSynthWaveform       waveform2;      //xy=335.2380599975586,1876.349126815796
+AudioMixer4              mixer4;         //xy=370.7936553955078,1742.5394973754883
 AudioPlaySdRaw           playSdRaw1;     //xy=428.57147216796875,2072.8571166992188
-AudioSynthWaveform       waveform8;      //xy=494.28564834594727,1989.9999551773071
-AudioSynthWaveform       waveform3;      //xy=497.1427993774414,1952.8570499420166
-AudioSynthWaveform       waveform1;      //xy=507.61899185180664,1862.3805589675903
-AudioSynthWaveform       waveform2;      //xy=508.5713691711426,1898.5713720321655
-AudioMixer4              mixer4;         //xy=518.5714329310825,1751.4283688408989
+AudioMixer4              mixer7;         //xy=493.6507453918457,1952.3808784484863
+AudioMixer4              mixer3;         //xy=502.2221984863281,1878.09499168396
+AudioEffectFade          fade2;          //xy=544.4443893432617,1759.999948501587
 AudioEffectDelay         delay2;         //xy=625.714298248291,2087.1429405212402
-AudioMixer4              mixer7;         //xy=661.428466796875,1965.7141723632812
-AudioMixer4              mixer3;         //xy=669.9999198913574,1891.4282855987549
-AudioEffectEnvelope      envelope2;      //xy=674.2857219151089,1758.5711660385134
+AudioEffectFade          fade1;          //xy=657.7777900695801,1893.3333549499512
+AudioEffectFade          fade3;          //xy=663.3333333333334,1943.3333333333333
 AudioSynthKarplusStrong  string2;        //xy=687.1428680419922,1687.1428985595703
 AudioSynthKarplusStrong  string1;        //xy=690.000114440918,1651.4286136627197
+AudioEffectEnvelope      envelope2;      //xy=714.2857284545898,1758.5711965560913
 AudioSynthWaveform       waveform7;      //xy=737.1428871154785,1824.2854919433594
 AudioEffectEnvelope      envelope1;      //xy=818.5712966918945,1914.285478591919
 AudioEffectEnvelope      envelope3;      //xy=818.5713577270508,1962.8570098876953
+AudioMixer4              mixer2;         //xy=824.4444427490234,2136.6668548583984
 AudioMixer4              mixer8;         //xy=831.4286651611328,2054.2855224609375
-AudioMixer4              mixer9;         //xy=831.4286880493164,2121.4284133911133
 AudioMixer4              mixer6;         //xy=838.5714416503906,1671.428560256958
 AudioFilterStateVariable filter2;        //xy=848.5713664463589,1765.7142105102541
 AudioEffectBitcrusher    bitcrusher1;    //xy=997.1429159981865,1671.428457123893
 AudioMixer4              mixer12;        //xy=1005.7143898010254,1775.7142391204834
 AudioMixer4              mixer11;        //xy=1008.5713806152344,1939.9998168945312
 AudioMixer4              mixer10;        //xy=1010.0001068115234,2054.28564453125
-AudioMixer4              mixer1;         //xy=1197.1427993774414,1864.2856464385986
-AudioOutputI2S           i2s1;           //xy=1232.2221488952637,1944.4444541931152
+AudioMixer4              mixer9;         //xy=1126.9842910766602,1711.428409576416
+AudioMixer4              mixer1;         //xy=1233.809440612793,1818.7300548553467
+AudioOutputI2S           i2s1;           //xy=1272.2221755981445,1933.3333835601807
 AudioConnection          patchCord1(waveform4, 0, mixer4, 0);
 AudioConnection          patchCord2(waveform6, 0, mixer4, 2);
 AudioConnection          patchCord3(waveform5, 0, mixer4, 1);
-AudioConnection          patchCord4(playSdRaw1, delay2);
-AudioConnection          patchCord5(waveform8, 0, mixer7, 2);
-AudioConnection          patchCord6(waveform3, 0, mixer7, 1);
-AudioConnection          patchCord7(waveform1, 0, mixer3, 1);
-AudioConnection          patchCord8(waveform2, 0, mixer3, 2);
-AudioConnection          patchCord9(mixer4, envelope2);
-AudioConnection          patchCord10(delay2, 0, mixer8, 0);
-AudioConnection          patchCord11(delay2, 1, mixer8, 1);
-AudioConnection          patchCord12(delay2, 2, mixer8, 2);
-AudioConnection          patchCord13(delay2, 3, mixer8, 3);
-AudioConnection          patchCord14(delay2, 4, mixer9, 0);
-AudioConnection          patchCord15(delay2, 5, mixer9, 1);
-AudioConnection          patchCord16(delay2, 6, mixer9, 2);
-AudioConnection          patchCord17(delay2, 7, mixer9, 3);
-AudioConnection          patchCord18(mixer7, envelope3);
-AudioConnection          patchCord19(mixer3, envelope1);
-AudioConnection          patchCord20(envelope2, 0, filter2, 0);
-AudioConnection          patchCord21(string2, 0, mixer6, 1);
-AudioConnection          patchCord22(string1, 0, mixer6, 0);
-AudioConnection          patchCord23(waveform7, 0, filter2, 1);
-AudioConnection          patchCord24(envelope1, 0, mixer11, 1);
-AudioConnection          patchCord25(envelope3, 0, mixer11, 2);
-AudioConnection          patchCord26(mixer8, 0, mixer10, 1);
-AudioConnection          patchCord27(mixer9, 0, mixer10, 2);
-AudioConnection          patchCord28(mixer6, bitcrusher1);
-AudioConnection          patchCord29(filter2, 0, mixer12, 0);
-AudioConnection          patchCord30(filter2, 1, mixer12, 1);
-AudioConnection          patchCord31(filter2, 2, mixer12, 2);
-AudioConnection          patchCord32(bitcrusher1, 0, mixer1, 0);
-AudioConnection          patchCord33(mixer12, 0, mixer1, 1);
-AudioConnection          patchCord34(mixer11, 0, mixer1, 2);
-AudioConnection          patchCord35(mixer10, 0, mixer1, 3);
-AudioConnection          patchCord36(mixer1, 0, i2s1, 0);
-AudioConnection          patchCord37(mixer1, 0, i2s1, 1);
+AudioConnection          patchCord4(waveform8, 0, mixer7, 2);
+AudioConnection          patchCord5(waveform3, 0, mixer7, 1);
+AudioConnection          patchCord6(waveform1, 0, mixer3, 1);
+AudioConnection          patchCord7(waveform2, 0, mixer3, 2);
+AudioConnection          patchCord8(mixer4, fade2);
+AudioConnection          patchCord9(playSdRaw1, delay2);
+AudioConnection          patchCord10(mixer7, fade3);
+AudioConnection          patchCord11(mixer3, fade1);
+AudioConnection          patchCord12(fade2, envelope2);
+AudioConnection          patchCord13(delay2, 0, mixer8, 0);
+AudioConnection          patchCord14(delay2, 1, mixer8, 1);
+AudioConnection          patchCord15(delay2, 2, mixer8, 2);
+AudioConnection          patchCord16(delay2, 3, mixer8, 3);
+AudioConnection          patchCord17(delay2, 4, mixer2, 0);
+AudioConnection          patchCord18(delay2, 5, mixer2, 1);
+AudioConnection          patchCord19(delay2, 6, mixer2, 2);
+AudioConnection          patchCord20(delay2, 7, mixer2, 3);
+AudioConnection          patchCord21(fade1, envelope1);
+AudioConnection          patchCord22(fade3, envelope3);
+AudioConnection          patchCord23(string2, 0, mixer6, 1);
+AudioConnection          patchCord24(string1, 0, mixer6, 0);
+AudioConnection          patchCord25(envelope2, 0, filter2, 0);
+AudioConnection          patchCord26(waveform7, 0, filter2, 1);
+AudioConnection          patchCord27(envelope1, 0, mixer11, 1);
+AudioConnection          patchCord28(envelope3, 0, mixer11, 2);
+AudioConnection          patchCord29(mixer2, 0, mixer10, 2);
+AudioConnection          patchCord30(mixer8, 0, mixer10, 1);
+AudioConnection          patchCord31(mixer6, bitcrusher1);
+AudioConnection          patchCord32(filter2, 0, mixer12, 0);
+AudioConnection          patchCord33(filter2, 1, mixer12, 1);
+AudioConnection          patchCord34(filter2, 2, mixer12, 2);
+AudioConnection          patchCord35(bitcrusher1, 0, mixer9, 2);
+AudioConnection          patchCord36(mixer12, 0, mixer1, 1);
+AudioConnection          patchCord37(mixer11, 0, mixer1, 2);
+AudioConnection          patchCord38(mixer10, 0, mixer1, 3);
+AudioConnection          patchCord39(mixer9, 0, mixer1, 0);
+AudioConnection          patchCord40(mixer1, 0, i2s1, 0);
+AudioConnection          patchCord41(mixer1, 0, i2s1, 1);
 AudioControlSGTL5000     audioShield;     //xy=1220.793601989746,2004.1269540786743
 // GUItool: end automatically generated code
 
@@ -105,61 +115,115 @@ AudioControlSGTL5000     audioShield;     //xy=1220.793601989746,2004.1269540786
 
 void setup() {
   // put your setup code here, to run once:
-  AudioMemory(1200);  //each block = 3ms and max delay is 425ms..
+  AudioMemory(100);  //each block = 3ms and max delay is 425ms..
   audioShield.enable();
   audioShield.volume(0.5);  //what is autoVolumeControl(x,x,x,x,x,x); and audioPostProcessorEnable();? from bitcrusher example
-  mixer1.gain(0, 1);  //(channel0-3,level0-32767)
-  mixer2.gain(0, 1);
+  mixer1.gain(0, 1);  // main mixer(channel0-3,level0-32767)
+  mixer1.gain(1, 1);
+  mixer1.gain(2, 1);
+  mixer1.gain(3, 1);
+  
+  //mixer2.gain(0, 1);
   mixer3.gain(0, 1);
+  mixer3.gain(1, 1);
+  mixer3.gain(2, 1);
+  mixer3.gain(3, 1);
+
   mixer4.gain(0, 1);
-  mixer5.gain(0, 1);
+  mixer4.gain(1, 1);
+  mixer4.gain(2, 1);
+  mixer4.gain(3, 1);
+  
+ // mixer5.gain(0, 1);
   mixer6.gain(0, 1);
+  mixer6.gain(1, 1);
+  mixer6.gain(2, 1);
+  mixer6.gain(3, 1);
+
   mixer7.gain(0, 1);
+  mixer7.gain(1, 1);
+  mixer7.gain(2, 1);
+  mixer7.gain(3, 1);
+
   mixer8.gain(0, 1);
-  mixer9.gain(0, 1);
-  mixer10.gain(0, 1);
-  mixer11.gain(0, 1);
-  mixer12.gain(0, 1);
+  mixer8.gain(1, 1);
+  mixer8.gain(2, 1);
+  mixer8.gain(3, 1);
+
+  //mixer9.gain(0, 1);
+  //mixer10.gain(0, 1);
+  //mixer11.gain(0, 1);
+  //mixer12.gain(0, 1);
 
   SPI.setMOSI(7);
   SPI.setSCK(14);
-  if (!(SD.begin(10))) { //print error message 
-    while(1) {
-      Serial.println("SD card no worky");
-    delay(500); //remove this delay before code is finalized.
-    }
-  }
+ // if (!(SD.begin(10))) { //print error message 
+  //  while(1) {
+  //    Serial.println("nope");
+    //delay(500); }//remove this delay before code is finalized.
+    
+  //}
 
 }
 
 void loop() {
   do_right_panel();
-
-void do_right_panel(void);  // touch panel synth stuff goes here
+}
+void do_right_panel(void)  // touch panel synth stuff goes here
 {  
- TsPot1Val = analogRead(TsPot1);
- TsPot2Val = analogRead(TsPot2);
- selectionValue = analogRead(selectionPin);
+ tsX = analogRead(TsPot1);
+ tsY = analogRead(TsPot2);
+ selectionValue = analogRead(selectionPin);  //this is used to select the different synth options in lieu of a button/rotary interaface.  
  TSPoint p = ts.getPoint();    // a point object holds x y and z coordinates
   
-  if (p.z > ts.pressureThreshhold) {  //we have some minimum pressure we consider 'valid' .... pressure of 0 means no pressing!
-     Serial.print("X = "); Serial.print(p.x);
-     Serial.print("\tY = "); Serial.print(p.y);
+ // if (p.z > ts.pressureThreshhold) {  //we have some minimum pressure we consider 'valid' .... pressure of 0 means no pressing!
+   //need to calibrate this so it always registers when pressed...
+     Serial.print("tsX = "); Serial.print(p.x);
+     Serial.print("tsY = "); Serial.print(p.y);
+  //   Serial.print("tsX = "); Serial.print(tsX);
+  //   Serial.print("tsY = "); Serial.print(tsY);
      Serial.print("\tPressure = "); Serial.println(p.z);
-  }
+  //}
   //remove when done testing..
-  Serial.print("Pot1Val = ");  Serial.print(TsPot1Val);
-  Serial.print("Pot2Val = ");  Serial.print(TsPot2Val);
-  Serial.print("Pot3Val = ");  Serial.println(TsPot3Val);
-
-    if (selectionValue > 0 && < 256){ //guitar w/ distortion patch: string1&2 > bitcrusher1
+//  Serial.print("Pot1Val = ");  Serial.print(tsX);
+//  Serial.print("Pot2Val = ");  Serial.print(tsY);
+  Serial.print("PotSelection = ");  Serial.println(selectionValue);
+delay(100);
+    if (selectionValue > 0 && selectionValue < 256){ //guitar w/ distortion patch: string1&2 > bitcrusher1
       //noteOn(frequency, velocity(0-1)); noteOff(velocity); //bits(xcrushBits(1-16)); 16=clean sampleRate(xsampleRate); 
+      mixer9.gain(2, 1); 
+      mixer9.gain(0, 1);
+      mixer9.gain(1, 1);
+      mixer9.gain(3, 1);
+      bitcrusher1.bits(16);
+      bitcrusher1.sampleRate(44100);
+       if (p.x > 60){    //XXXX
+          Serial.print("nowTouching  ");
+           if (p.x > 60 && p.x < 356){
+           string1.noteOn(NOTE_C3, 1);  //C3
+           Serial.print("C3"); }
+              if (p.x > 357 && p.x < 600){
+              string1.noteOn(NOTE_G3, 1);  //G3
+              Serial.print("G3"); }
+                if (p.x > 601 && p.x < 356){
+                string1.noteOn(NOTE_C4, 1);  //C4
+                Serial.print("C4"); }
+                 if (p.y > 60 && p.y < 300 ); {    //YYYY This is going to be an issue bc Y defaults to ~195 when not being touched...
+                 string2.noteOn(NOTE_E3, 1); 
+                 Serial.print("E3"); }
+            }      if (p.y > 301 && p.y < 600 ); {
+                   string2.noteOn(NOTE_E4, 1);
+            }
+          
+    }
       
-    } else if (selectionValue > 257 && < 512){ //waveform LPF & HPF mixer: waveform4,5,6 > envelope2 > filter2 w/ waveform7 input >
-
-    } else if (selectionValue > 513 && < 768){  //waveform chord mixer waveform 1&2 > envelope1 > out
-
+      
+     else if (selectionValue > 257 && selectionValue < 512){ //waveform LPF & HPF mixer: waveform4,5,6 > envelope2 > filter2 w/ waveform7 input >
+      mixer12.gain(0,1);
+    } else if (selectionValue > 513 && selectionValue< 768){  //waveform chord mixer waveform 1&2 > envelope1 > out
+      mixer11.gain(0,1);
     } else {  //playSDRaw1 > delay2 (x8) > mixer1
-      
+      mixer10.gain(0,1);
       }
 }
+
