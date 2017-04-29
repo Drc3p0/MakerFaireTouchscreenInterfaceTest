@@ -7,13 +7,13 @@
 #include <stdint.h> //touchscreen
 #include "TouchScreen.h"
 // These are the pins for the touchscreen
-#define YP A3  // must be an analog pin, use "An" notation!
-#define XM A4  // must be an analog pin, use "An" notation!
+#define YP A6  // must be an analog pin, use "An" notation!
+#define XM A7  // must be an analog pin, use "An" notation!
 #define YM 8   // can be a digital pin
 #define XP 9   // can be a digital pin
-#define TsPot1 A5 // 
-#define TsPot2 A6 // 
-#define selectionPin A7 // 
+#define TsPot1 A18 // 
+#define TsPot2 A19 // 
+#define selectionPin A20 // 
 
 int tsX = 0;
 int tsY = 0;
@@ -178,8 +178,8 @@ void do_right_panel(void)  // touch panel synth stuff goes here
   
  // if (p.z > ts.pressureThreshhold) {  //we have some minimum pressure we consider 'valid' .... pressure of 0 means no pressing!
    //need to calibrate this so it always registers when pressed...
-     Serial.print("tsX = "); Serial.print(p.x);
-     Serial.print("tsY = "); Serial.print(p.y);
+     Serial.print("tsX = "); Serial.print(p.x); //64-900
+     Serial.print("tsY = "); Serial.print(p.y); //60-590 center value when not being touched.
   //   Serial.print("tsX = "); Serial.print(tsX);
   //   Serial.print("tsY = "); Serial.print(tsY);
      Serial.print("\tPressure = "); Serial.println(p.z);
@@ -195,9 +195,9 @@ delay(100);
       mixer9.gain(0, 1);
       mixer9.gain(1, 1);
       mixer9.gain(3, 1);
-      bitcrusher1.bits(16);
+      bitcrusher1.bits(16);  
       bitcrusher1.sampleRate(44100);
-       if (p.x > 60){    //XXXX
+       if (p.x > 60){    //X
           Serial.print("nowTouching  ");
            if (p.x > 60 && p.x < 356){
            string1.noteOn(NOTE_C3, 1);  //C3
@@ -208,7 +208,7 @@ delay(100);
                 if (p.x > 601 && p.x < 356){
                 string1.noteOn(NOTE_C4, 1);  //C4
                 Serial.print("C4"); }
-                 if (p.y > 60 && p.y < 300 ); {    //YYYY This is going to be an issue bc Y defaults to ~195 when not being touched...
+                 if (p.y > 60 && p.y < 300 ); {    //Y This is going to be an issue bc Y defaults to ~195 when not being touched...
                  string2.noteOn(NOTE_E3, 1); 
                  Serial.print("E3"); }
             }      if (p.y > 301 && p.y < 600 ); {
@@ -220,10 +220,21 @@ delay(100);
       
      else if (selectionValue > 257 && selectionValue < 512){ //waveform LPF & HPF mixer: waveform4,5,6 > envelope2 > filter2 w/ waveform7 input >
       mixer12.gain(0,1);
+      //frequency(freq); corner freq when signal is zero
+      //resonance(Q); .7 - 5.0
+      //octaveControl(octaves); 0-7 octave range. sets attenuation range for filters corner frequency.  
+      //
     } else if (selectionValue > 513 && selectionValue< 768){  //waveform chord mixer waveform 1&2 > envelope1 > out
       mixer11.gain(0,1);
+    
+    
+    
     } else {  //playSDRaw1 > delay2 (x8) > mixer1
       mixer10.gain(0,1);
+      //play(filename);
+      //stop();
+      //lengthMillis();
+      
       }
 }
 
