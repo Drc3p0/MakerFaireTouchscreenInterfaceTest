@@ -188,23 +188,30 @@ void do_right_panel(void)  // touch panel synth stuff goes here
      Serial.print("RawY = "); Serial.print(p.y); //60-590 center value when not being touched.
      //Serial.print("\tPressure = "); Serial.println(p.z);
   //}
-//piano freq range 27.5 Hz (A0) to 4186 Hz (C8)
 
-  int constX = constrain(p.x, 60, 950); 
-  int mappedX = map(constX, 60, 950, 28, 3186);  //
-  Serial.print ("mappedX = "); Serial.print(mappedX); 
 
-  int constY = constrain(p.y, 97, 910);
-  int mappedY = map(constY, 97, 910, 28, 3186);   
-  Serial.print ("mappedY = "); Serial.println(mappedY); 
 
-delay(100);
-    if (selectionValue > 0 && selectionValue < 256){ //guitar w/ distortion patch: string1&2 > bitcrusher1
+
+
+
+
+
+    if (selectionValue > 0 && selectionValue < 256){ //GUITAR w/ distortion patch: string1&2 > bitcrusher1
       //noteOn(frequency, velocity(0-1)); noteOff(velocity); //bits(xcrushBits(1-16)); 16=clean sampleRate(xsampleRate); 
+      
+      //X mapped to piano freq range
+      int constX = constrain(p.x, 60, 950); 
+      int mappedX = map(constX, 60, 950, 28, 3186);  
+      Serial.print ("mappedX = "); Serial.print(mappedX); 
+
+      //Y mapped for bitcrushing
+      int constY = constrain(p.y, 97, 910);
+      int BitsMappedY = map(constY, 97, 910, 1, 16); 
+      int sRateMappedY = map(constY, 97, 910,  1, 44100); 
+      //Serial.print ("mappedY = "); Serial.println(mappedY); 
+      //delay(100);
+     
       mixer9.gain(2, 1); 
-      mixer9.gain(0, 1);
-      mixer9.gain(1, 1);
-      mixer9.gain(3, 1);
       bitcrusher1.bits(16);  
       bitcrusher1.sampleRate(44100);
        if (p.x > 60){                      //X
@@ -218,69 +225,106 @@ delay(100);
                 if (p.x > 601 && p.x < 356){
                 string1.noteOn(NOTE_C4, 1);  //C4
                 Serial.print("C4"); }
-                 if (p.y > 60 && p.y < 300 ); {    //Y defaults to ~195 when not being touched...
-                 string2.noteOn(NOTE_E3, 1); 
-                 Serial.print("E3"); }
-            }      if (p.y > 301 && p.y < 600 ); {
-                   string2.noteOn(NOTE_E4, 1);
-            }
+           //expand X scale range and use Y for bitcrushing
+           //      if (p.y > 60 && p.y < 300 ); {    //Y defaults to ~195 when not being touched...
+           //      string2.noteOn(NOTE_E3, 1); 
+           //      Serial.print("E3"); }
+           //       if (p.y > 301 && p.y < 600 ); {
+           //        string2.noteOn(NOTE_E4, 1); }
+            
           
     }
       
       
      else if (selectionValue > 257 && selectionValue < 512){ //waveform LPF & HPF mixer: waveform4,5,6 > envelope2 > filter2 w/ waveform7 input >
       mixer12.gain(0,1);  //set gain for other channels
-      
-      //waveformX3.begin(level, freq, WAVEFORM_SINE);
-      //waveformX.frequency(freq);
-      //waveformX.pulseWidth(amount); ??
+      mixer12.gain(1,1);
+      mixer12.gain(2,1);
+        //X mapped for waveforms
+        int constX = constrain(p.x, 60, 950); 
+        int mappedX = map(constX, 60, 950, 28, 3186);  //mapped to piano freq range
+        Serial.print ("mappedX = "); Serial.print(mappedX); 
+        
+        //Y mapped for LPF/HPF controlled by waveform input: F = Fcenter * 2^(signal * octaves) 
+        int constY = constrain(p.y, 97, 910);
+        int mappedY = map(constY, 97, 910, 28, 3186);   
+        Serial.print ("mappedY = "); Serial.println(mappedY); 
+        //delay(100);
 
-      //remove fade and envelope
-
-      
-      //filterY.frequency(freq); corner freq when input control signal is zero
-      //filterY.resonance(Q); .7 - 5.0 attenuate beforehand to prevent clipping
-      //filterY.octaveControl(octaves); 0-7 octave range. sets attenuation range for filters corner frequency.  
-      //waveformX.begin(level, freq, WAVEFORM_SINE);
-      //waveformX.frequency(freq);
+          waveform4.begin(1.0, 130.81, WAVEFORM_SINE); //C3
+          waveform5.begin(1.0, 130.81, WAVEFORM_TRIANGLE); //C3
+          waveform6.begin(1.0, 261.63, WAVEFORM_SINE); //C4
+        //waveform4.frequency(freq);
+        //waveform5.frequency(freq);
+        //waveform6.frequency(freq);
+        //waveformX.pulseWidth(amount); ??
+  
+        //remove fade and envelope
+  
+        
+        //filter2.frequency(freq); corner freq when input control signal is zero
+        //filter2.resonance(Q); .7 - 5.0 attenuate beforehand to prevent clipping
+        //filter2.octaveControl(octaves); 0-7 octave range. sets attenuation range for filters corner frequency.  
+        //waveform7.begin(level, 130.81, WAVEFORM_SINE); //C3
+        //waveform7.frequency(freq);
 
       
     } else if (selectionValue > 513 && selectionValue< 768){  //waveform chord mixer waveform 1&2 > envelope1 > out
-      mixer11.gain(0,1); //set gain for other channels;
-      //waveform8&3 > mixer7 > fade3 > env3...waveform1&2 > mixer3 > fade1 > env1
-     
-     if (p.x > 60){ //begin playing when touched
-     waveform8.begin(1.0, 130.81, WAVEFORM_SINE); //C3
-     waveform3.begin(1.0, 261.63, WAVEFORM_TRIANGLE); //C4
-     waveform8.frequency(mappedX);
-     waveform3.frequency(mappedX);
-     //fade and envelope
-     fade3.fadeIn(500);
-     envelope3.noteOn();
-     envelope3.delay(0);
-     envelope3.hold(0);
-     waveform1.begin(1.0, 196.00, WAVEFORM_SQUARE); //G3
-     waveform2.begin(1.0, 392.00, WAVEFORM_TRIANGLE); //G4
-     waveform1.frequency(mappedY);
-     waveform2.frequency(mappedY);
-      //fade and envelope
-     fade1.fadeIn(500);
-     envelope1.noteOn();
-     envelope1.delay(0);
-     envelope1.hold(0);
-      //remove fade and/or envelope
+      //waveform8&3 > mixer7 > fade3 > env3...waveform1&2 > mixer3 > fade1 > env1      
+        mixer11.gain(1,1); //set gain for other channels;
+        mixer11.gain(2,1);
+        int constX = constrain(p.x, 60, 950); 
+        int mappedX = map(constX, 60, 950, 28, 3186);  //mapped to piano freq range
+        Serial.print ("mappedX = "); Serial.print(mappedX); 
+
+        int constY = constrain(p.y, 97, 910);
+        int mappedY = map(constY, 97, 910, 28, 3186);   
+        Serial.print ("mappedY = "); Serial.println(mappedY); 
+        //delay(100);
+  
+         if (p.x > 60){ //begin playing when touched
+  
+          waveform8.begin(1.0, 130.81, WAVEFORM_SINE); //C3
+          waveform3.begin(1.0, 261.63, WAVEFORM_TRIANGLE); //C4
+          waveform8.frequency(mappedX);
+          waveform3.frequency(mappedX);
+          //fade and envelope
+          fade3.fadeIn(500);
+          envelope3.noteOn();
+          envelope3.delay(0);
+          envelope3.hold(0);
+          waveform1.begin(1.0, 196.00, WAVEFORM_SQUARE); //G3
+          waveform2.begin(1.0, 392.00, WAVEFORM_TRIANGLE); //G4
+          waveform1.frequency(mappedY);
+          waveform2.frequency(mappedY);
+           //fade and envelope
+          fade1.fadeIn(500);
+          envelope1.noteOn();
+          envelope1.delay(0);
+          envelope1.hold(0);
+            //remove fade and/or envelope
 
     
      }
     
     } else {  //playSDRaw1 > delay2 (x8) > mixer1
-      mixer10.gain(0,1);  //set gain for other channels
-      //SDraw
-      //if(p.x > 60){  playSDRaw1.play("filename.raw");  }
-      //if(p.x < 60){ playSDRaw1.stop();  }
-      //lengthMillis(); can you retrigger the wav file with the touchscreen?
+        mixer10.gain(1,1);  //set gain for other channels
+        mixer10.gain(2,1);
+        int constX = constrain(p.x, 60, 950); 
+        int mappedX = map(constX, 60, 950, 28, 3186);  //mapped to piano freq range
+        Serial.print ("mappedX = "); Serial.print(mappedX); 
 
-      //delayY1-8.delay(channel0-7, milliseconds);  //max 425mS...how much AudioMemory() needed?  each block = 3mS of delay
+        int constY = constrain(p.y, 97, 910);
+        int mappedY = map(constY, 97, 910, 28, 3186);   
+        Serial.print ("mappedY = "); Serial.println(mappedY); 
+        //delay(100);
+   
+        //SDraw
+        //if(p.x > 60){  playSDRaw1.play("filename.raw");  }
+        //if(p.x < 60){ playSDRaw1.stop();  }
+        //lengthMillis(); can you retrigger the wav file with the touchscreen?
+
+        //delayY1-8.delay(channel0-7, milliseconds);  //max 425mS...how much AudioMemory() needed?  each block = 3mS of delay
       }
 }
 
