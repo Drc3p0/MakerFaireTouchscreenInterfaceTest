@@ -28,14 +28,21 @@ elapsedMillis sinceTempo;
 int tempo = 120;
 int stepCount;
 
-// MIDI SCALES 
-int dorian[8] = {0, 2, 3, 5, 7, 9, 10, 12};  // dorian 
+// MIDI SCALES
+int dorian[8] = {0, 2, 3, 5, 7, 9, 10, 12};  // dorian
 int majorPentatonic[8] = {0, 2, 4, 7, 9, 12, 14, 16};  // major pentatonic
-int minorPentatonic[8] = {0, 3, 5, 7, 10, 12, 15, 17}; // minor pentatonic 
+int minorPentatonic[8] = {0, 3, 5, 7, 10, 12, 15, 17}; // minor pentatonic
 int octaves[5] = {0, 12, 24, 36, 48}; // octaves
-float mtof(int note){      // Outputs a float freq based on incoming MIDI note. How to use: mtof(noteValue)  
-   return (440.0f * exp2f((float)(note - 69) * 0.0833333f));
+float mtof(int note) {     // Outputs a float freq based on incoming MIDI note. How to use: mtof(noteValue)
+  return (440.0f * exp2f((float)(note - 69) * 0.0833333f));
 }
+
+// GUItool: begin automatically generated code
+#include <Audio.h>
+#include <Wire.h>
+#include <SPI.h>
+#include <SD.h>
+#include <SerialFlash.h>
 
 // GUItool: begin automatically generated code
 AudioSynthWaveform       waveform4;      //xy=224.44445037841797,1697.7775182724
@@ -63,6 +70,7 @@ AudioMixer4              mixer2;         //xy=824.4444427490234,2136.66685485839
 AudioMixer4              mixer8;         //xy=831.4286651611328,2054.2855224609375
 AudioMixer4              mixer6;         //xy=838.5714416503906,1671.428560256958
 AudioFilterStateVariable filter2;        //xy=848.5713664463589,1765.7142105102541
+AudioSynthWaveformSine   sine1;          //xy=972.7777777777777,1526.111111111111
 AudioEffectBitcrusher    bitcrusher1;    //xy=997.1429159981865,1671.428457123893
 AudioMixer4              mixer12;        //xy=1005.7143898010254,1775.7142391204834
 AudioMixer4              mixer11;        //xy=1008.5713806152344,1939.9998168945312
@@ -104,13 +112,14 @@ AudioConnection          patchCord31(mixer6, bitcrusher1);
 AudioConnection          patchCord32(filter2, 0, mixer12, 0);
 AudioConnection          patchCord33(filter2, 1, mixer12, 1);
 AudioConnection          patchCord34(filter2, 2, mixer12, 2);
-AudioConnection          patchCord35(bitcrusher1, 0, mixer9, 2);
-AudioConnection          patchCord36(mixer12, 0, mixer1, 1);
-AudioConnection          patchCord37(mixer11, 0, mixer1, 2);
-AudioConnection          patchCord38(mixer10, 0, mixer1, 3);
-AudioConnection          patchCord39(mixer9, 0, mixer1, 0);
-AudioConnection          patchCord40(mixer1, 0, i2s1, 0);
-AudioConnection          patchCord41(mixer1, 0, i2s1, 1);
+AudioConnection          patchCord35(sine1, 0, mixer9, 0);
+AudioConnection          patchCord36(bitcrusher1, 0, mixer9, 2);
+AudioConnection          patchCord37(mixer12, 0, mixer1, 1);
+AudioConnection          patchCord38(mixer11, 0, mixer1, 2);
+AudioConnection          patchCord39(mixer10, 0, mixer1, 3);
+AudioConnection          patchCord40(mixer9, 0, mixer1, 0);
+AudioConnection          patchCord41(mixer1, 0, i2s1, 0);
+AudioConnection          patchCord42(mixer1, 0, i2s1, 1);
 AudioControlSGTL5000     audioShield;     //xy=1220.793601989746,2004.1269540786743
 // GUItool: end automatically generated code
 
@@ -122,36 +131,41 @@ void setup() {
   audioShield.enable();
   audioShield.volume(0.5);  //what is autoVolumeControl(x,x,x,x,x,x); and audioPostProcessorEnable();? from bitcrusher example
   mixer1.gain(0, 1);  // main mixer(channel0-3,level0-32767)
-  mixer1.gain(1, 1);
-  mixer1.gain(2, 1);
-  mixer1.gain(3, 1);
-  
+  mixer1.gain(1, 0);
+  mixer1.gain(2, 0);
+  mixer1.gain(3, 0);
+
   //mixer2.gain(0, 1);
-  mixer3.gain(0, 1);
-  mixer3.gain(1, 1);
-  mixer3.gain(2, 1);
-  mixer3.gain(3, 1);
+  mixer3.gain(0, 0);
+  mixer3.gain(1, 0);
+  mixer3.gain(2, 0);
+  mixer3.gain(3, 0);
 
-  mixer4.gain(0, 1);
-  mixer4.gain(1, 1);
-  mixer4.gain(2, 1);
-  mixer4.gain(3, 1);
-  
- // mixer5.gain(0, 1);
-  mixer6.gain(0, 1);
-  mixer6.gain(1, 1);
-  mixer6.gain(2, 1);
-  mixer6.gain(3, 1);
+  mixer4.gain(0, 0);
+  mixer4.gain(1, 0);
+  mixer4.gain(2, 0);
+  mixer4.gain(3, 0);
 
-  mixer7.gain(0, 1);
-  mixer7.gain(1, 1);
-  mixer7.gain(2, 1);
-  mixer7.gain(3, 1);
+  // mixer5.gain(0, 1);
+  mixer6.gain(0, 0);
+  mixer6.gain(1, 0);
+  mixer6.gain(2, 0);
+  mixer6.gain(3, 0);
 
-  mixer8.gain(0, 1);
-  mixer8.gain(1, 1);
-  mixer8.gain(2, 1);
-  mixer8.gain(3, 1);
+  mixer7.gain(0, 0);
+  mixer7.gain(1, 0);
+  mixer7.gain(2, 0);
+  mixer7.gain(3, 0);
+
+  mixer8.gain(0, 0);
+  mixer8.gain(1, 0);
+  mixer8.gain(2, 0);
+  mixer8.gain(3, 0);
+
+  sine1.amplitude(0.5);
+
+  sine1.frequency(130.81);
+
 
   //mixer9.gain(0, 1);
   //mixer10.gain(0, 1);
@@ -160,33 +174,36 @@ void setup() {
 
   SPI.setMOSI(7);
   SPI.setSCK(14);
- // if (!(SD.begin(10))) { //print error message 
+  // if (!(SD.begin(10))) { //print error message
   //  while(1) {
   //    Serial.println("nope");
-    //delay(500); }//remove this delay before code is finalized.
-    
+  //delay(500); }//remove this delay before code is finalized.
+
   //}
 
 }
 
 void loop() {
   do_right_panel();
+  delay(1);
 }
+
 void do_right_panel(void)  // touch panel synth stuff goes here
-{  
- Pot1 = analogRead(TsPot1);
- Pot2 = analogRead(TsPot2);
- selectionValue = analogRead(selectionPin);  //this is used to select the different synth options in lieu of a button/rotary interaface.  
- TSPoint p = ts.getPoint();    // a point object holds x y and z coordinates
-  
- // if (p.z > ts.pressureThreshhold) {  //we have some minimum pressure we consider 'valid' .... pressure of 0 means no pressing!
-   //need to calibrate this so it always registers when pressed...
-     //Serial.print("Pot1 = "); Serial.print(Pot1);
-     //Serial.print("Pot2 = "); Serial.print(Pot2);
-     //Serial.print("selectionValue = ");  Serial.println(selectionValue);
-     Serial.print("RawX = "); Serial.print(p.x); //64-900
-     Serial.print("RawY = "); Serial.print(p.y); //60-590 center value when not being touched.
-     //Serial.print("\tPressure = "); Serial.println(p.z);
+{
+  Pot1 = analogRead(TsPot1);
+  Pot2 = analogRead(TsPot2);
+  selectionValue = analogRead(selectionPin);  //this is used to select the different synth options in lieu of a button/rotary interaface.
+  TSPoint p;
+  p = ts.getPoint();    // a point object holds x y and z coordinates
+
+  // if (p.z > ts.pressureThreshhold) {  //we have some minimum pressure we consider 'valid' .... pressure of 0 means no pressing!
+  //need to calibrate this so it always registers when pressed...
+  //Serial.print("Pot1 = "); Serial.print(Pot1);
+  //Serial.print("Pot2 = "); Serial.print(Pot2);
+  //Serial.print("selectionValue = ");  Serial.print(selectionValue);
+  //Serial.print("RawX = "); Serial.print(p.x); //64-900
+  //Serial.print("RawY = "); Serial.println(p.y); //60-590 center value when not being touched.
+  //Serial.print("\tPressure = "); Serial.println(p.z);
   //}
 
 
@@ -196,135 +213,145 @@ void do_right_panel(void)  // touch panel synth stuff goes here
 
 
 
-    if (selectionValue > 0 && selectionValue < 256){ //GUITAR w/ distortion patch: string1&2 > bitcrusher1
-      //noteOn(frequency, velocity(0-1)); noteOff(velocity); //bits(xcrushBits(1-16)); 16=clean sampleRate(xsampleRate); 
-      
-      //X mapped to piano freq range
-      int constX = constrain(p.x, 60, 950); 
-      int mappedX = map(constX, 60, 950, 28, 3186);  
-      Serial.print ("mappedX = "); Serial.print(mappedX); 
+  if (selectionValue > 0 && selectionValue < 256) { //GUITAR w/ distortion patch: string1&2 > bitcrusher1
+    //noteOn(frequency, velocity(0-1)); noteOff(velocity); //bits(xcrushBits(1-16)); 16=clean sampleRate(xsampleRate);
+    Serial.println("Guitar ");
+/*
+    //X mapped to piano freq range 28 - 3186
+    int constX = constrain(p.x, 60, 950);
+    int mappedX = map(constX, 60, 950, 0, 360);
+    //Serial.print ("mappedX = "); Serial.println(mappedX);
 
-      //Y mapped for bitcrushing
-      int constY = constrain(p.y, 97, 910);
-      int BitsMappedY = map(constY, 97, 910, 1, 16); 
-      int sRateMappedY = map(constY, 97, 910,  1, 44100); 
-      //Serial.print ("mappedY = "); Serial.println(mappedY); 
-      //delay(100);
-     
-      mixer9.gain(2, 1); 
-      bitcrusher1.bits(16);  
-      bitcrusher1.sampleRate(44100);
-       if (p.x > 60){                      //X
-          Serial.print("nowTouching  ");
-           if (p.x > 60 && p.x < 356){
-           string1.noteOn(NOTE_C3, 1);  //C3
-           Serial.print("C3"); }
-              if (p.x > 357 && p.x < 600){
-              string1.noteOn(NOTE_G3, 1);  //G3
-              Serial.print("G3"); }
-                if (p.x > 601 && p.x < 356){
-                string1.noteOn(NOTE_C4, 1);  //C4
-                Serial.print("C4"); }
-           //expand X scale range and use Y for bitcrushing
-           //      if (p.y > 60 && p.y < 300 ); {    //Y defaults to ~195 when not being touched...
-           //      string2.noteOn(NOTE_E3, 1); 
-           //      Serial.print("E3"); }
-           //       if (p.y > 301 && p.y < 600 ); {
-           //        string2.noteOn(NOTE_E4, 1); }
-            
-          
+    //Y mapped for bitcrushing
+    int constY = constrain(p.y, 97, 910);
+    int BitsMappedY = map(constY, 97, 910, 1, 16);
+    int sRateMappedY = map(constY, 97, 910,  1, 44100);
+    //Serial.print ("mappedY = "); Serial.println(mappedY);
+    //delay(100);
+
+    mixer9.gain(2, 1);
+    bitcrusher1.bits(16);
+    bitcrusher1.sampleRate(44100);
+*/
+    //sine1.phase(mappedX);
+
+    //    if (p.x > 60) {                     //X
+    //      Serial.print("nowTouching  ");
+    //      if (p.x > 60 && p.x < 356) {
+    //        string1.noteOn(NOTE_C3, 1);  //C3
+    //        Serial.print("C3");
+    //      }
+    //      if (p.x > 357 && p.x < 600) {
+    //        string1.noteOn(NOTE_G3, 1);  //G3
+    //        Serial.print("G3");
+    //      }
+    //      if (p.x > 601 && p.x < 356) {
+    //        string1.noteOn(NOTE_C4, 1);  //C4
+    //        Serial.print("C4");
+    //      }
+
+
+    //expand X scale range and use Y for bitcrushing
+    //      if (p.y > 60 && p.y < 300 ); {    //Y defaults to ~195 when not being touched...
+    //      string2.noteOn(NOTE_E3, 1);
+    //      Serial.print("E3"); }
+    //       if (p.y > 301 && p.y < 600 ); {
+    //        string2.noteOn(NOTE_E4, 1); }
+
+
+  } else if (selectionValue > 257 && selectionValue < 512) { //waveform LPF & HPF mixer: waveform4,5,6 > envelope2 > filter2 w/ waveform7 input >
+    Serial.println("Waveform & Filter");
+    mixer12.gain(0, 1); //set gain for other channels
+    mixer12.gain(1, 1);
+    mixer12.gain(2, 1);
+
+    //X mapped for waveforms
+    int constX = constrain(p.x, 60, 950);
+    int mappedX = map(constX, 60, 950, 28, 3186);  //mapped to piano freq range
+    //Serial.print ("mappedX = "); Serial.print(mappedX);
+
+    //Y mapped for LPF/HPF controlled by waveform input: F = Fcenter * 2^(signal * octaves)
+    int constY = constrain(p.y, 97, 910);
+    int mappedY = map(constY, 97, 910, 28, 3186);
+    //Serial.print ("mappedY = "); Serial.println(mappedY);
+    //delay(100);
+
+    waveform4.begin(1.0, 130.81, WAVEFORM_SINE); //C3
+    waveform5.begin(1.0, 130.81, WAVEFORM_TRIANGLE); //C3
+    waveform6.begin(1.0, 261.63, WAVEFORM_SINE); //C4
+    //waveform4.frequency(freq);
+    //waveform5.frequency(freq);
+    //waveform6.frequency(freq);
+    //waveformX.pulseWidth(amount); ??
+
+    //remove fade and envelope
+
+
+    //filter2.frequency(freq); corner freq when input control signal is zero
+    //filter2.resonance(Q); .7 - 5.0 attenuate beforehand to prevent clipping
+    //filter2.octaveControl(octaves); 0-7 octave range. sets attenuation range for filters corner frequency.
+    //waveform7.begin(level, 130.81, WAVEFORM_SINE); //C3
+    //waveform7.frequency(freq);
+
+
+  } else if (selectionValue > 513 && selectionValue < 768) { //waveform chord mixer waveform 1&2 > envelope1 > out
+    //waveform8&3 > mixer7 > fade3 > env3...waveform1&2 > mixer3 > fade1 > env1
+    Serial.println("Waveform Chord mixer");
+    mixer11.gain(1, 1); //set gain for other channels;
+    mixer11.gain(2, 1);
+    int constX = constrain(p.x, 60, 950);
+    int mappedX = map(constX, 60, 950, 28, 3186);  //mapped to piano freq range
+    //Serial.print ("mappedX = "); Serial.print(mappedX);
+
+    int constY = constrain(p.y, 97, 910);
+    int mappedY = map(constY, 97, 910, 28, 3186);
+    //Serial.print ("mappedY = "); Serial.println(mappedY);
+    //delay(100);
+
+    if (p.x > 60) { //begin playing when touched
+
+      waveform8.begin(1.0, 130.81, WAVEFORM_SINE); //C3
+      waveform3.begin(1.0, 261.63, WAVEFORM_TRIANGLE); //C4
+      waveform8.frequency(mappedX);
+      waveform3.frequency(mappedX);
+      //fade and envelope
+      fade3.fadeIn(500);
+      envelope3.noteOn();
+      envelope3.delay(0);
+      envelope3.hold(0);
+      waveform1.begin(1.0, 196.00, WAVEFORM_SQUARE); //G3
+      waveform2.begin(1.0, 392.00, WAVEFORM_TRIANGLE); //G4
+      waveform1.frequency(mappedY);
+      waveform2.frequency(mappedY);
+      //fade and envelope
+      fade1.fadeIn(500);
+      envelope1.noteOn();
+      envelope1.delay(0);
+      envelope1.hold(0);
+      //remove fade and/or envelope
+
+
     }
-      
-      
-     else if (selectionValue > 257 && selectionValue < 512){ //waveform LPF & HPF mixer: waveform4,5,6 > envelope2 > filter2 w/ waveform7 input >
-      mixer12.gain(0,1);  //set gain for other channels
-      mixer12.gain(1,1);
-      mixer12.gain(2,1);
-        //X mapped for waveforms
-        int constX = constrain(p.x, 60, 950); 
-        int mappedX = map(constX, 60, 950, 28, 3186);  //mapped to piano freq range
-        Serial.print ("mappedX = "); Serial.print(mappedX); 
-        
-        //Y mapped for LPF/HPF controlled by waveform input: F = Fcenter * 2^(signal * octaves) 
-        int constY = constrain(p.y, 97, 910);
-        int mappedY = map(constY, 97, 910, 28, 3186);   
-        Serial.print ("mappedY = "); Serial.println(mappedY); 
-        //delay(100);
 
-          waveform4.begin(1.0, 130.81, WAVEFORM_SINE); //C3
-          waveform5.begin(1.0, 130.81, WAVEFORM_TRIANGLE); //C3
-          waveform6.begin(1.0, 261.63, WAVEFORM_SINE); //C4
-        //waveform4.frequency(freq);
-        //waveform5.frequency(freq);
-        //waveform6.frequency(freq);
-        //waveformX.pulseWidth(amount); ??
-  
-        //remove fade and envelope
-  
-        
-        //filter2.frequency(freq); corner freq when input control signal is zero
-        //filter2.resonance(Q); .7 - 5.0 attenuate beforehand to prevent clipping
-        //filter2.octaveControl(octaves); 0-7 octave range. sets attenuation range for filters corner frequency.  
-        //waveform7.begin(level, 130.81, WAVEFORM_SINE); //C3
-        //waveform7.frequency(freq);
+  } else {  //playSDRaw1 > delay2 (x8) > mixer1
+    Serial.println("SDRawPlayer");
+    mixer10.gain(1, 1); //set gain for other channels
+    mixer10.gain(2, 1);
+    int constX = constrain(p.x, 60, 950);
+    int mappedX = map(constX, 60, 950, 28, 3186);  //mapped to piano freq range
+    //Serial.print ("mappedX = "); Serial.print(mappedX);
 
-      
-    } else if (selectionValue > 513 && selectionValue< 768){  //waveform chord mixer waveform 1&2 > envelope1 > out
-      //waveform8&3 > mixer7 > fade3 > env3...waveform1&2 > mixer3 > fade1 > env1      
-        mixer11.gain(1,1); //set gain for other channels;
-        mixer11.gain(2,1);
-        int constX = constrain(p.x, 60, 950); 
-        int mappedX = map(constX, 60, 950, 28, 3186);  //mapped to piano freq range
-        Serial.print ("mappedX = "); Serial.print(mappedX); 
+    int constY = constrain(p.y, 97, 910);
+    int mappedY = map(constY, 97, 910, 28, 3186);
+    //Serial.print ("mappedY = "); Serial.println(mappedY);
+    //delay(100);
 
-        int constY = constrain(p.y, 97, 910);
-        int mappedY = map(constY, 97, 910, 28, 3186);   
-        Serial.print ("mappedY = "); Serial.println(mappedY); 
-        //delay(100);
-  
-         if (p.x > 60){ //begin playing when touched
-  
-          waveform8.begin(1.0, 130.81, WAVEFORM_SINE); //C3
-          waveform3.begin(1.0, 261.63, WAVEFORM_TRIANGLE); //C4
-          waveform8.frequency(mappedX);
-          waveform3.frequency(mappedX);
-          //fade and envelope
-          fade3.fadeIn(500);
-          envelope3.noteOn();
-          envelope3.delay(0);
-          envelope3.hold(0);
-          waveform1.begin(1.0, 196.00, WAVEFORM_SQUARE); //G3
-          waveform2.begin(1.0, 392.00, WAVEFORM_TRIANGLE); //G4
-          waveform1.frequency(mappedY);
-          waveform2.frequency(mappedY);
-           //fade and envelope
-          fade1.fadeIn(500);
-          envelope1.noteOn();
-          envelope1.delay(0);
-          envelope1.hold(0);
-            //remove fade and/or envelope
+    //SDraw
+    //if(p.x > 60){  playSDRaw1.play("filename.raw");  }
+    //if(p.x < 60){ playSDRaw1.stop();  }
+    //lengthMillis(); can you retrigger the wav file with the touchscreen?
 
-    
-     }
-    
-    } else {  //playSDRaw1 > delay2 (x8) > mixer1
-        mixer10.gain(1,1);  //set gain for other channels
-        mixer10.gain(2,1);
-        int constX = constrain(p.x, 60, 950); 
-        int mappedX = map(constX, 60, 950, 28, 3186);  //mapped to piano freq range
-        Serial.print ("mappedX = "); Serial.print(mappedX); 
-
-        int constY = constrain(p.y, 97, 910);
-        int mappedY = map(constY, 97, 910, 28, 3186);   
-        Serial.print ("mappedY = "); Serial.println(mappedY); 
-        //delay(100);
-   
-        //SDraw
-        //if(p.x > 60){  playSDRaw1.play("filename.raw");  }
-        //if(p.x < 60){ playSDRaw1.stop();  }
-        //lengthMillis(); can you retrigger the wav file with the touchscreen?
-
-        //delayY1-8.delay(channel0-7, milliseconds);  //max 425mS...how much AudioMemory() needed?  each block = 3mS of delay
-      }
+    //delayY1-8.delay(channel0-7, milliseconds);  //max 425mS...how much AudioMemory() needed?  each block = 3mS of delay
+  }
 }
 
